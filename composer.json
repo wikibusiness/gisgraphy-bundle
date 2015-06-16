@@ -1,0 +1,26 @@
+{
+  "name": "wikibusiness/gisgraphy-bundle",
+  "type": "symfony-bundle",
+  "description": "Gisgraphy - Geocode webservice wrapper.",
+  "keywords": ["gisgraphy", "gis", "symfony"],
+  "homepage": "https://github.com/wikibusiness/gisgraphy-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Hasse Ramlev Hansen",
+      "email": "hh@wikibusiness.org"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/wikibusiness/gisgraphy-bundle/issues"
+  },
+  "require": {
+    "php": ">=5.5",
+    "guzzlehttp/guzzle": "~5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "WB\\GisgraphyBundle\\": ""
+    }
+  }
+}
