@@ -18,7 +18,7 @@ use GuzzleHttp\Client;
  * @package WB\GisgraphyBundle\Client
  * @author  Hasse Ramlev Hansen <hh@wikibusiness.org>
  */
-class Gisgsraphy
+class Gisgraphy
 {
 
     /**
@@ -53,19 +53,26 @@ class Gisgsraphy
 
     /**
      * @param $address
+     *
+     * @return $this
      */
     public function setAddress($address)
     {
         $this->address = str_replace(',', ' ', $address);
 
+        return $this;
     }
 
     /**
      * @param $country
+     *
+     * @return $this
      */
     public function setCountry($country)
     {
         $this->country = $country;
+
+        return $this;
     }
 
     /**
@@ -80,8 +87,11 @@ class Gisgsraphy
         $options['country'] = $this->country;
         $options['address'] = $this->address;
 
-        $response = $this->client->get($this->endpoint, http_build_query($options));
+        try {
+            return $this->client->get($this->endpoint.'?'.http_build_query($options));
+        } catch (\Exception $e) {
+            return false;
+        }
 
-        return $response;
     }
 }
