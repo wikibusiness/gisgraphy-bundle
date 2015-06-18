@@ -20,7 +20,6 @@ use GuzzleHttp\Client;
  */
 class Gisgraphy
 {
-
     /**
      * @var Client
      */
@@ -88,7 +87,8 @@ class Gisgraphy
         $options['address'] = $this->address;
 
         try {
-            return $this->client->get($this->endpoint.'?'.http_build_query($options));
+            $response = $this->client->get($this->endpoint.'?'.http_build_query($options));
+            return json_decode($response->getBody()->getContents());
         } catch (\Exception $e) {
             return false;
         }
