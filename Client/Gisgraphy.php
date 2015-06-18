@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the WB\ElasticaBundle package.
+ * This file is part of the wikibusiness.org package.
  *
  * (c) WikiBusiness <http://company.wikibusiness.org/>
  *
@@ -11,6 +11,7 @@
 namespace WB\GisgraphyBundle\Client;
 
 use GuzzleHttp\Client;
+use WB\GisgraphyBundle\GisgraphyAddress;
 
 /**
  * Class Gisgsraphy
@@ -38,7 +39,7 @@ class Gisgraphy
     /**
      * @var string
      */
-    private $country;
+    private $country_code;
 
     /**
      * @var string
@@ -69,7 +70,7 @@ class Gisgraphy
      */
     public function setCountry($country)
     {
-        $this->country = $country;
+        $this->country_code = $country;
 
         return $this;
     }
@@ -83,15 +84,16 @@ class Gisgraphy
     {
         $options = array_merge($this->default_options, $options);
 
-        $options['country'] = $this->country;
+        $options['country'] = $this->country_code;
         $options['address'] = $this->address;
 
         try {
-            $response = $this->client->get($this->endpoint.'?'.http_build_query($options));
-            return json_decode($response->getBody()->getContents());
+            $response               = $this->client->get($this->endpoint.'?'.http_build_query($options));
+            $this->gisgraphyAddress = json_decode($response->getBody()->getContents());
+
+            return new GisgraphyAddress((array)$this->gisgraphyAddress->result[0]);
         } catch (\Exception $e) {
             return false;
         }
-
     }
 }
