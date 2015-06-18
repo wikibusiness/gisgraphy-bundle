@@ -12,7 +12,7 @@ namespace WB\GisgraphyBundle;
 
 /**
  * Class GisgraphyAddress
- * 
+ *
  * @package WB\GisgraphyBundle
  * @author  Hasse Ramlev Hansen <hh@wikibusiness.org>
  */
@@ -48,7 +48,7 @@ class GisgraphyAddress implements \ArrayAccess
      */
     public function getKeys()
     {
-        return array_combine(array_keys($this->address), array_keys($this->address));
+        return array_keys($this->address);
     }
 
     /**
