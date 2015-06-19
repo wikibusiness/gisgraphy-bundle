@@ -34,43 +34,57 @@ class Gisgraphy
         'format' => 'json',
     ];
 
-    private $address;
+    /**
+     * @var string
+     */
+    private $rawAddress;
 
     /**
      * @var string
      */
-    private $country_code;
+    private $countryCode;
+
+    /**
+     * @var string
+     */
+    private $address;
 
     /**
      * @var string
      */
     private $endpoint = 'http://services.gisgraphy.com/addressparser';
 
-    public function __construct()
+    /**
+     * @param null $rawAddress
+     * @param null $countryCode
+     */
+    public function __construct($rawAddress = null, $countryCode = null)
     {
-        $this->client = new Client();
+        $this->client      = new Client();
+        $this->rawAddress  = $rawAddress;
+        $this->countryCode = $countryCode;
     }
 
     /**
-     * @param $address
+     * @param $rawAddress
      *
      * @return $this
      */
-    public function setAddress($address)
+    public function setAddress($rawAddress)
     {
-        $this->address = str_replace(',', ' ', $address);
+        $this->rawAddress = str_replace(',', ' ', $rawAddress);
 
         return $this;
     }
 
     /**
-     * @param $country
+     * @param $countryCode
      *
      * @return $this
      */
-    public function setCountry($country)
+    public function setCountryCode($countryCode)
     {
-        $this->country_code = $country;
+        $this->countryCode = $countryCode;
 
         return $this;
     }
@@ -78,22 +92,24 @@ class Gisgraphy
     /**
      * @param array $options
      *
-     * @return \GuzzleHttp\Message\FutureResponse|\GuzzleHttp\Message\ResponseInterface|\GuzzleHttp\Ring\Future\FutureInterface|null
+     * @return bool|GisgraphyAddress
      */
-    public function parse(array $options = [])
+    public function decode(array $options = [])
     {
         $options = array_merge($this->default_options, $options);
 
-        $options['country'] = $this->country_code;
-        $options['address'] = $this->address;
+        $options['country'] = $this->countryCode;
+        $options['address'] = $this->rawAddress;
 
         try {
-            $response               = $this->client->get($this->endpoint.'?'.http_build_query($options));
-            $this->gisgraphyAddress = json_decode($response->getBody()->getContents());
+            $response      = $this->client->get($this->endpoint.'?'.http_build_query($options));
+            $this->address = json_decode($response->getBody()->getContents());
 
-            return new GisgraphyAddress((array)$this->gisgraphyAddress->result[0]);
+            return new GisgraphyAddress((array)$this->address->result[0]);
         } catch (\Exception $e) {
-            return false;
+            // Handle exception.
         }
+
+        return false;
     }
 }
