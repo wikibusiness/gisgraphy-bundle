@@ -28,7 +28,10 @@ class GisgraphyAddress implements \ArrayAccess
      */
     public function __construct($address = [])
     {
-        $this->address = $address;
+        // Make address keys more consistent, uppercase only first letter.
+        foreach ($address as $key => $value) {
+            $this->address[ucfirst(strtolower($key))] = $value;
+        }
     }
 
     /**
@@ -56,7 +59,7 @@ class GisgraphyAddress implements \ArrayAccess
      */
     public function __get($key)
     {
-        if (isset($this->address[$key])) {
+        if (isset($this->address[ucfirst($key)])) {
             return $this->address[$key];
         }
 
@@ -69,7 +72,7 @@ class GisgraphyAddress implements \ArrayAccess
     public function __call($method, array $arguments = [])
     {
         $action = substr($method, 0, 3);
-        $key    = substr($method, 3);
+        $key    = ucfirst(substr($method, 3));
 
         if ('get' === $action) {
             return $this->__get($key);
