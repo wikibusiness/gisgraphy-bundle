@@ -29,7 +29,7 @@ class Gisgraphy
     /**
      * @var array
      */
-    private $default_options = [
+    private $defaultOptions = [
         'indent' => true,
         'format' => 'json',
     ];
@@ -47,11 +47,6 @@ class Gisgraphy
     /**
      * @var string
      */
-    private $address;
-
-    /**
-     * @var string
-     */
     private $endpoint = 'http://services.gisgraphy.com/addressparser';
 
     /**
@@ -60,25 +55,30 @@ class Gisgraphy
      */
     public function __construct($rawAddress = null, $countryCode = null)
     {
-        $this->client      = new Client();
-        $this->rawAddress  = $rawAddress;
-        $this->countryCode = $countryCode;
+        $this->client = new Client();
+
+        $this->setAddress($rawAddress);
+        $this->setCountryCode($countryCode);
     }
 
     /**
-     * @param $rawAddress
+     * Set source address string.
+     *
+     * @param string $rawAddress
      *
      * @return $this
      */
     public function setAddress($rawAddress)
     {
-        $this->rawAddress = str_replace(',', ' ', $rawAddress);
+        $this->rawAddress = str_replace([',', "\n"], ' ', $rawAddress);
 
         return $this;
     }
 
     /**
-     * @param $countryCode
+     * Set country code for the address, must be iso 2 char version.
+     *
+     * @param string $countryCode
      *
      * @return $this
      */
@@ -90,22 +90,28 @@ class Gisgraphy
     }
 
     /**
+     * Decode the address.
+     *
      * @param array $options
      *
      * @return bool|GisgraphyAddress
      */
     public function decode(array $options = [])
     {
-        $options = array_merge($this->default_options, $options);
+        $options = array_merge($this->defaultOptions, $options);
 
         $options['country'] = $this->countryCode;
         $options['address'] = $this->rawAddress;
 
         try {
-            $response      = $this->client->get($this->endpoint.'?'.http_build_query($options));
-            $this->address = json_decode($response->getBody()->getContents());
+            $response = $this->client->get($this->endpoint.'?'.http_build_query($options));
+            $address  = $response->json();
 
-            return new GisgraphyAddress((array)$this->address->result[0]);
+            if (0 === $address['numFound']) {
+                return false;
+            }
+
+            return new GisgraphyAddress((array) $address['result'][0]);
         } catch (\Exception $e) {
             // Handle exception.
         }
